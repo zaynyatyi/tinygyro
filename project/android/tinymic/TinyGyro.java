@@ -9,14 +9,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.content.Context;
+import java.util.List;
 
 class TinyGyro extends Extension implements SensorEventListener
 {
 	static private TinyGyro instance;
 	static private boolean isRegistered;
 
-	private SensorManager sm = null;
-	private float[] currentValue = {0.0, 0.0, 0.0};
+	private static SensorManager sm = null;
+	private static double[] currentValue = {0.0, 0.0, 0.0};
 
 
 	static private HaxeObject eventHaxeHandler = null;
@@ -26,28 +28,21 @@ class TinyGyro extends Extension implements SensorEventListener
 		registerExtension();
 		Log.e("tinygyro", "registered extension in start()");
 		if (sm == null) {
-			sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+			sm = (SensorManager) mainContext.getSystemService(Context.SENSOR_SERVICE);
 		}
 		List<Sensor> typedSensors = sm.getSensorList(Sensor.TYPE_ACCELEROMETER);
 		if (typedSensors == null || typedSensors.size() <= 0) {
 			Log.e("tinygyro", "there are no ACCELEROMETER sensor");
 		}
-		sm.registerListener(this, typedSensors.get(0), SensorManager.SENSOR_DELAY_GAME);
+		sm.registerListener(TinyGyro.getInstance(), typedSensors.get(0), SensorManager.SENSOR_DELAY_GAME);
 	}
 
 	public static void stop() 
 	{
-		sm.unregisterListener(this);
+		sm.unregisterListener(TinyGyro.getInstance());
 	}
 
-	public void onSensorChanged(SensorEvent event) {
-		currentValue[0] = event.values[0];
-		currentValue[1] = event.values[1];
-		currentValue[2] = event.values[2];
-	}
-
-
-	public static float[] getAmplitude() 
+	public static double[] getAmplitude() 
 	{
 		return currentValue;
 	}
@@ -63,6 +58,14 @@ class TinyGyro extends Extension implements SensorEventListener
 		GameActivity.getInstance().registerExtension(TinyGyro.getInstance());
 		isRegistered = true;
 	}
+
+	public void onSensorChanged(SensorEvent event) {
+		currentValue[0] = event.values[0];
+		currentValue[1] = event.values[1];
+		currentValue[2] = event.values[2];
+	}
+
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
 	private static TinyGyro getInstance()
 	{

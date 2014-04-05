@@ -56,7 +56,7 @@ class TinyGyro {
 		tinygyro_get_amplitude = openfl.utils.JNI.createStaticMethod(
 				"tinygyro.TinyGyro",
 				"getAmplitude",
-				"()D"
+				"()[D"
 				);
 		inited = true;
 	}
