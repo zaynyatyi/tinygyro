@@ -24,7 +24,7 @@ Usage in project:
 
 <pre>
 Add 
-    <haxelib name="TinyGyro" /> to project.xml
+    haxelib name="TinyGyro" to project.xml
 In class you should have claaback function 
     public function traceGyro():Void
 After main class creation use
